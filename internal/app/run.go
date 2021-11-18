@@ -12,10 +12,9 @@ import (
 	"io/fs"
 	"io/ioutil"
 
-	"github.com/LilRooks/ytdl-ipfs-archiver/internal/pkg/config"
-	"github.com/LilRooks/ytdl-ipfs-archiver/internal/pkg/ipfs"
-	"github.com/LilRooks/ytdl-ipfs-archiver/internal/pkg/table"
-	"github.com/LilRooks/ytdl-ipfs-archiver/internal/pkg/ytdl"
+	"github.com/LilRooks/five/internal/pkg/config"
+	"github.com/LilRooks/five/internal/pkg/orbithelper"
+	"github.com/LilRooks/five/internal/pkg/table"
 
 	"github.com/ipfs/go-cid"
 	"github.com/web3-storage/go-w3s-client"
@@ -37,6 +36,7 @@ const (
 // Run is the actual code for the command
 func Run(args []string, stdout io.Writer, stderr io.Writer) (int, error) {
 	logger := log.New(stdout, "[base] ", log.Ltime|log.Lmsgprefix)
+	orbithelper.Init("Address")
 
 	// Parse the flags
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)

@@ -8,6 +8,7 @@ import (
 
 // ConfSet is a struct representing the configuration
 type ConfSet struct {
+	RepoDir string
 	Address string
 	KeyPath string
 }
@@ -26,4 +27,8 @@ func Read(path string) (ConfSet, error) {
 	return ret, nil
 }
 
-func (c *ConfSet) Defaults()
+// Defaults parses the defaults if needed
+func (c *ConfSet) Defaults(cArgs *ConfSet) error {
+	// set defaults for each field
+	return nil
+}
