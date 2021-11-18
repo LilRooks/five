@@ -25,3 +25,5 @@ func Read(path string) (ConfSet, error) {
 	err = edn.Unmarshal(data, &ret)
 	return ret, nil
 }
+
+func (c *ConfSet) Defaults()

@@ -42,7 +42,9 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) (int, error) {
 	flags := flag.NewFlagSet(args[0], flag.ExitOnError)
 	flags.StringVar(&cfgPath, "conf", "", "path to the configuration file to use")
 	flags.StringVar(&sortsBy, "sort", "", "sorts results by ()") // TODO insert the options
-	flags.IntVar(&openNth, "open", 0, "Opens the selected result")
+	flags.BoolVar(&useAnon, "anon", false, "Whether to push as an anonymous user")
+	flags.IntVar(&pullNth, "pull", 0, "Pulls the selected result")
+
 	err := flags.Parse(args[1:])
 	if err != nil {
 		return errorConfig, err
@@ -56,6 +58,14 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) (int, error) {
 	}
 
 	// Set defaults
+	err = configs.Defaults(ConfSet{SortsBy: sortsBy, AnonIdentity: useAnon})
+	if err != nil {
+		return errorConfig, err
+	}
+	if val, ok := os.LookupEnv("TOKEN"); ok {
+		configs.Token = val
+	}
+
 	if len(ytdlPath) == 0 {
 		ytdlPath = configs.Binary
 	}
@@ -101,9 +111,6 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) (int, error) {
 
 	cid, _ := cid.Decode(location)
 
-	if val, ok := os.LookupEnv("TOKEN"); ok {
-		configs.Token = val
-	}
 	c, err := w3s.NewClient(w3s.WithToken(configs.Token))
 	if err != nil {
 		return errorConfig, err
