@@ -93,7 +93,7 @@ func Run(args []string) (int, error) {
 		return errorGeneric, err
 	}
 	defer rStore.Close()
-	fmt.Printf("Opening DB at %s\n", rStore.Address().String())
+	fmt.Printf("Opened store at %s\n", rStore.Address().String())
 	if err := rStore.Load(context.Background(), 100); err != nil {
 		return errorGeneric, err
 	}
