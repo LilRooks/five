@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -92,7 +93,10 @@ func Run(args []string) (int, error) {
 		return errorGeneric, err
 	}
 	defer rStore.Close()
-	fmt.Printf("%s", rStore.Address().String())
+	fmt.Printf("Opening DB at %s\n", rStore.Address().String())
+	if err := rStore.Load(context.Background(), 100); err != nil {
+		return errorGeneric, err
+	}
 
 	// Open local store on configs
 	lStore, err := orbithelper.OpenLocalDocs(ldb, configs)
