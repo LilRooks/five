@@ -86,6 +86,7 @@ func Run(args []string) (int, error) {
 	if err != nil {
 		return errorGeneric, err
 	}
+	fmt.Printf("Opened store at db\n")
 
 	// Open store on configs
 	rStore, err := orbithelper.OpenRemoteLog(rdb, configs)

@@ -12,6 +12,7 @@ import (
 	"github.com/ipfs/go-ipfs/plugin/loader"
 
 	fsconfig "github.com/ipfs/go-ipfs-config"
+	ipfshttp "github.com/ipfs/go-ipfs-http-client"
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
 	icore "github.com/ipfs/interface-go-ipfs-core"
 )
@@ -26,6 +27,9 @@ func NewIPFS(conf *config.ConfSet, isLocal bool) (icore.CoreAPI, error) {
 	} else {
 		repoPath = conf.RepoDir
 		createRepo = conf.MkStore
+	}
+	if conf.LDaemon {
+		return ipfshttp.NewLocalApi()
 	}
 	return createNode(context.Background(), repoPath, isLocal, createRepo)
 }
@@ -45,7 +49,7 @@ func createNode(ctx context.Context, repoPath string, isLocal bool, createRepo b
 
 	nodeOptions := &core.BuildCfg{
 		Online:    !isLocal,
-		Permanent: true,             // It is temporary way to signify that node is permanent
+		Permanent: false,            // It is temporary way to signify that node is permanent
 		Routing:   libp2p.DHTOption, // This option sets the node to be a full DHT node (both fetching and storing DHT Records)
 		// Routing: libp2p.DHTClientOption, // This option sets the node to be a client DHT node (only fetching records)
 		Repo: repo,

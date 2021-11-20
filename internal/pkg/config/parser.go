@@ -11,6 +11,7 @@ type ConfSet struct {
 	// IPFS
 	RepoDir string
 	RepoLDB string
+	LDaemon bool
 	// Store
 	Address string
 	AddrDoc string
