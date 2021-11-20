@@ -11,6 +11,8 @@ import (
 	ifacedb "berty.tech/go-orbit-db/iface"
 )
 
+const greplicate bool = true
+
 // Connect connects the EventLogStore with configuration
 func Connect(logger *zap.Logger, conf *config.ConfSet, isLocal bool) (ifacedb.OrbitDB, error) {
 	ipfs, err := ipfshelper.NewIPFS(conf, isLocal)
@@ -29,7 +31,8 @@ func Connect(logger *zap.Logger, conf *config.ConfSet, isLocal bool) (ifacedb.Or
 // OpenRemoteLog Opens the remote store (log)
 func OpenRemoteLog(db ifacedb.OrbitDB, conf *config.ConfSet) (ifacedb.EventLogStore, error) {
 	local := false
-	cdb := ifacedb.CreateDBOptions{Create: &conf.MkStore, LocalOnly: &local}
+	replicate := greplicate
+	cdb := ifacedb.CreateDBOptions{Create: &conf.MkStore, LocalOnly: &local, Replicate: &replicate}
 
 	return db.Log(context.Background(), conf.Address, &cdb)
 }
@@ -37,7 +40,8 @@ func OpenRemoteLog(db ifacedb.OrbitDB, conf *config.ConfSet) (ifacedb.EventLogSt
 // OpenLocalDocs opens the local document store
 func OpenLocalDocs(db ifacedb.OrbitDB, conf *config.ConfSet) (ifacedb.DocumentStore, error) {
 	local := true
-	cdb := ifacedb.CreateDBOptions{Create: &conf.MkLocal, LocalOnly: &local}
+	replicate := false
+	cdb := ifacedb.CreateDBOptions{Create: &conf.MkLocal, LocalOnly: &local, Replicate: &replicate}
 
 	return db.Docs(context.Background(), conf.AddrDoc, &cdb)
 }

@@ -2,6 +2,7 @@ package app
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"go.uber.org/zap"
@@ -91,6 +92,7 @@ func Run(args []string) (int, error) {
 		return errorGeneric, err
 	}
 	defer rStore.Close()
+	fmt.Printf("%s", rStore.Address().String())
 
 	// Open local store on configs
 	lStore, err := orbithelper.OpenLocalDocs(ldb, configs)

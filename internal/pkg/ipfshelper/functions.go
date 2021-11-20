@@ -44,13 +44,15 @@ func createNode(ctx context.Context, repoPath string, isLocal bool, createRepo b
 	// Construct the node
 
 	nodeOptions := &core.BuildCfg{
-		Online:  !isLocal,
-		Routing: libp2p.DHTOption, // This option sets the node to be a full DHT node (both fetching and storing DHT Records)
+		Online:    !isLocal,
+		Permanent: true,             // It is temporary way to signify that node is permanent
+		Routing:   libp2p.DHTOption, // This option sets the node to be a full DHT node (both fetching and storing DHT Records)
 		// Routing: libp2p.DHTClientOption, // This option sets the node to be a client DHT node (only fetching records)
 		Repo: repo,
 		ExtraOpts: map[string]bool{
 			"pubsub":  true,
 			"namesys": true,
+			"ipnsps":  true,
 		},
 	}
 
@@ -68,8 +70,6 @@ func initRepo(repoPath string, isLocal bool) error {
 	if err != nil {
 		return err
 	}
-
-	cfg.Pubsub.Router = "gossipsub"
 
 	return fsrepo.Init(repoPath, cfg)
 }

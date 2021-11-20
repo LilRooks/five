@@ -2,33 +2,45 @@ package commands
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	orbitdb "berty.tech/go-orbit-db"
 	ifacedb "berty.tech/go-orbit-db/iface"
 	"berty.tech/go-orbit-db/stores/operation"
 	"github.com/LilRooks/five/internal/pkg/config"
-	"go.uber.org/zap"
 )
 
-const max int = 100
+const max int = 10
 
 // Parse parses remaining args and logs accordingly
 func Parse(store orbitdb.EventLogStore, cache orbitdb.DocumentStore, args []string, conf *config.ConfSet) error {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		return err
-	}
-	sugar := logger.Sugar()
-	defer sugar.Sync()
+	amount := max
+	cStream := ifacedb.StreamOptions{Amount: &amount} // Default up to 100 results, TODO Configurable
 	switch cmd := args[0]; cmd {
 	case "list":
 		resultChan := make(chan operation.Operation)
-		amount := max
-		cStream := ifacedb.StreamOptions{Amount: &amount} // Default up to 100 results, TODO Configurable
 		go store.Stream(context.Background(), resultChan, &cStream)
-		for op := range resultChan {
-			sugar.Info("content", string(op.GetValue()))
+		for _ = range resultChan {
+			fmt.Fprintf(os.Stdout, "%s\n", "fucko")
 		}
+	case "push":
+		op, err := store.Add(context.Background(), []byte(args[1]))
+		if err != nil {
+			return err
+		}
+		strB, err := op.Marshal()
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(os.Stdout, "%s", string(strB))
+	case "count":
+		ops, err := store.List(context.Background(), &cStream)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(os.Stdout, "%d", len(ops))
+	default:
 	}
 	return nil
 }

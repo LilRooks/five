@@ -5,7 +5,7 @@ go 1.16
 require (
 	berty.tech/go-orbit-db v1.13.1
 	github.com/ipfs/go-ipfs v0.10.0
-	github.com/ipfs/go-ipfs-config v0.16.0
+	github.com/ipfs/go-ipfs-config v0.17.0
 	github.com/ipfs/interface-go-ipfs-core v0.5.1
 	github.com/mattn/go-sqlite3 v1.14.9
 	go.uber.org/zap v1.19.1
