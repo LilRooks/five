@@ -14,33 +14,36 @@ import (
 const max int = 10
 
 // Parse parses remaining args and logs accordingly
-func Parse(store orbitdb.EventLogStore, cache orbitdb.DocumentStore, args []string, conf *config.ConfSet) error {
+func Parse(store orbitdb.EventLogStore, cache orbitdb.EventLogStore, args []string, conf *config.ConfSet) error {
 	amount := max
 	cStream := ifacedb.StreamOptions{Amount: &amount} // Default up to 100 results, TODO Configurable
 	switch cmd := args[0]; cmd {
 	case "list":
 		resultChan := make(chan operation.Operation)
 		go store.Stream(context.Background(), resultChan, &cStream)
-		for _ = range resultChan {
-			fmt.Fprintf(os.Stdout, "%s\n", "fucko")
+		for range resultChan {
+			fmt.Fprintf(os.Stdout, "%s\n", "thing")
 		}
 	case "push":
-		op, err := store.Add(context.Background(), []byte(args[1]))
-		if err != nil {
-			return err
+		for _, word := range args[1:] {
+			_, err := store.Add(context.Background(), []byte(word))
+			if err != nil {
+				fmt.Fprintf(os.Stdout, "errored: %s\n", err)
+				return err
+			}
 		}
-		strB, err := op.Marshal()
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(os.Stdout, "%s", string(strB))
-	case "count":
+
+		//case "count":
 		ops, err := store.List(context.Background(), &cStream)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(os.Stdout, "%d", len(ops))
+		fmt.Fprintf(os.Stdout, "%d\n", len(ops))
+		for _, oop := range ops {
+			fmt.Fprintf(os.Stdout, "%s\n", oop.GetValue())
+		}
 	default:
+		fmt.Fprintf(os.Stdout, "should be done then!")
 	}
 	return nil
 }
